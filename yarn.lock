@@ -1624,6 +1624,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clsx@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "clsx@npm:2.1.1"
+  checksum: 10c0/c4c8eb865f8c82baab07e71bfa8897c73454881c4f99d6bc81585aecd7c441746c1399d08363dc096c550cceaf97bd4ce1e8854e1771e9998d9f94c4fe075839
+  languageName: node
+  linkType: hard
+
 "color-convert@npm:^2.0.1":
   version: 2.0.1
   resolution: "color-convert@npm:2.0.1"
@@ -4137,6 +4144,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tailwind-merge@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "tailwind-merge@npm:3.6.0"
+  checksum: 10c0/a728d929f4786bcb48641db4228cc8c006a7545491783a658fb4d24d177dab960620991d17805a047309228de50ab949ca8d9e112c30183da0432367796ae186
+  languageName: node
+  linkType: hard
+
 "tailwindcss@npm:4.3.0, tailwindcss@npm:^4":
   version: 4.3.0
   resolution: "tailwindcss@npm:4.3.0"
@@ -4303,12 +4317,14 @@ __metadata:
     "@types/node": "npm:^20"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
+    clsx: "npm:^2.1.1"
     eslint: "npm:^9"
     eslint-config-next: "npm:16.2.9"
     framer-motion: "npm:^12.40.0"
     next: "npm:16.2.9"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
+    tailwind-merge: "npm:^3.6.0"
     tailwindcss: "npm:^4"
     typescript: "npm:^5"
   languageName: unknown
