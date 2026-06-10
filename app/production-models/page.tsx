@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   title: "Production Models",
   description:
     "Explore the full U-Boat Worx production submarine range — nine series-engineered families spanning personal exploration, research, cruise, performance and entertainment submersibles.",
+  alternates: { canonical: "/production-models" },
+  openGraph: {
+    title: "Production Models | U-Boat Worx",
+    description:
+      "Explore the full U-Boat Worx production submarine range — nine series-engineered families spanning personal exploration, research, cruise, performance and entertainment submersibles.",
+  },
 };
 
 export default function ProductionModelsPage() {

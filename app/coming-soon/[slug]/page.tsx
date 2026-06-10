@@ -24,6 +24,8 @@ export async function generateMetadata({
   return {
     title: entry.title,
     description: entry.description,
+    alternates: { canonical: `/coming-soon/${slug}` },
+    robots: { index: false, follow: true },
   };
 }
 

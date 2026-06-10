@@ -17,8 +17,11 @@ export function BubbleField({ count = 24, className }: BubbleFieldProps) {
   const bubbles = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => {
-        const size = 4 + seededRandom(i * 1.1) * 14;
-        const duration = 16 + seededRandom(i * 3.7) * 20;
+        // depth: 0 = far away, 1 = closest to the viewer
+        const depth = seededRandom(i * 4.4);
+        const size = 2 + depth * 16;
+        const duration = 40 - depth * 24;
+        const blur = (1 - depth) * 2.5;
         return {
           id: i,
           size,
@@ -26,7 +29,8 @@ export function BubbleField({ count = 24, className }: BubbleFieldProps) {
           duration,
           delay: -seededRandom(i * 5.9) * duration,
           driftX: (seededRandom(i * 7.3) - 0.5) * 80,
-          opacity: 0.15 + seededRandom(i * 11.3) * 0.35,
+          opacity: 0.06 + depth * 0.34,
+          blur,
         };
       }),
     [count]
@@ -53,6 +57,7 @@ export function BubbleField({ count = 24, className }: BubbleFieldProps) {
               animationDuration: `${bubble.duration}s`,
               animationDelay: `${bubble.delay}s`,
               opacity: bubble.opacity,
+              filter: bubble.blur > 0.4 ? `blur(${bubble.blur}px)` : undefined,
               "--drift-x": `${bubble.driftX}px`,
             } as CSSProperties
           }

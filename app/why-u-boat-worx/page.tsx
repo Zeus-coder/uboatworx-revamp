@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   title: "Why U-Boat Worx",
   description:
     "Nine engineering essentials that make U-Boat Worx submarines without peer in comfort, visibility, safety, control, adaptability and endurance beneath the surface.",
+  alternates: { canonical: "/why-u-boat-worx" },
+  openGraph: {
+    title: "Why U-Boat Worx",
+    description:
+      "Nine engineering essentials that make U-Boat Worx submarines without peer in comfort, visibility, safety, control, adaptability and endurance beneath the surface.",
+  },
 };
 
 export default function WhyUboatWorxPage() {

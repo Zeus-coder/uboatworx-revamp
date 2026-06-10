@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 import { GradientText } from "@/components/ui/GradientText";
 import { SectionReveal, StaggerGroup, StaggerItem } from "@/components/ui/SectionReveal";
 import { EssentialCard } from "@/components/why/EssentialCard";
@@ -28,9 +28,15 @@ export function WhyUbwTeaser() {
       </StaggerGroup>
 
       <div className="mt-12 flex justify-center">
-        <Button href="/why-u-boat-worx" variant="secondary">
+        <Link
+          href="/why-u-boat-worx"
+          className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-cyan-glow transition-colors duration-300 hover:text-cyan-soft"
+        >
           See All 9 Essentials
-        </Button>
+          <span className="transition-transform duration-300 group-hover:translate-x-1">
+            →
+          </span>
+        </Link>
       </div>
     </section>
   );

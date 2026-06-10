@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Get in touch with U-Boat Worx headquarters in Breda, Netherlands, or one of our authorised dealers worldwide.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Contact U-Boat Worx",
+    description:
+      "Get in touch with U-Boat Worx headquarters in Breda, Netherlands, or one of our authorised dealers worldwide.",
+  },
 };
 
 export default function ContactPage() {

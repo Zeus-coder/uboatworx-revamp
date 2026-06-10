@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 
 const ZONES = [
   { depth: 0, label: "Surface" },
@@ -12,54 +19,111 @@ const ZONES = [
 ];
 
 const MAX_DEPTH = 6000;
-const TRACK_HEIGHT = 160;
+const IDLE_DELAY = 1100;
+const TOAST_DURATION = 2400;
+
+function zoneFor(depth: number) {
+  return [...ZONES].reverse().find((zone) => depth >= zone.depth) ?? ZONES[0];
+}
+
+function DepthReadout({ depthValue }: { depthValue: MotionValue<number> }) {
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    return depthValue.on("change", (latest) => setDisplay(Math.round(latest)));
+  }, [depthValue]);
+
+  return (
+    <span className="font-display text-xs tabular-nums text-cyan-glow text-glow">
+      {display.toLocaleString()} m
+    </span>
+  );
+}
 
 export function DepthGauge() {
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 24,
+    stiffness: 60,
+    damping: 20,
     mass: 0.5,
     restDelta: 0.0005,
   });
-  const depth = useTransform(smoothProgress, [0, 1], [0, MAX_DEPTH]);
-  const fillHeight = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
-  const markerOffset = useTransform(smoothProgress, [0, 1], [0, TRACK_HEIGHT]);
-  const [display, setDisplay] = useState(0);
+
+  const depthValue = useTransform(smoothProgress, [0, 1], [0, MAX_DEPTH]);
+  const markerY = useTransform(smoothProgress, [0, 1], ["6%", "94%"]);
+
+  const [active, setActive] = useState(true);
+  const [zoneToast, setZoneToast] = useState<string | null>(null);
 
   useEffect(() => {
-    return depth.on("change", (latest) => setDisplay(Math.round(latest)));
-  }, [depth]);
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    let toastTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastZone = ZONES[0].label;
 
-  const zone =
-    [...ZONES].reverse().find((z) => display >= z.depth) ?? ZONES[0];
+    const wake = (duration: number) => {
+      setActive(true);
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => setActive(false), duration);
+    };
+
+    const unsubProgress = smoothProgress.on("change", () => wake(IDLE_DELAY));
+
+    const unsubDepth = depthValue.on("change", (latest) => {
+      const zone = zoneFor(Math.round(latest));
+      if (zone.label !== lastZone) {
+        lastZone = zone.label;
+        setZoneToast(zone.label);
+        wake(TOAST_DURATION + 200);
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => setZoneToast(null), TOAST_DURATION);
+      }
+    });
+
+    idleTimer = setTimeout(() => setActive(false), IDLE_DELAY);
+
+    return () => {
+      unsubProgress();
+      unsubDepth();
+      if (idleTimer) clearTimeout(idleTimer);
+      if (toastTimer) clearTimeout(toastTimer);
+    };
+  }, [smoothProgress, depthValue]);
 
   return (
-    <div className="pointer-events-none fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 lg:block">
-      <div className="glass-panel flex flex-col items-center gap-3 rounded-full px-3 py-5">
-        <span className="font-display text-[10px] uppercase tracking-[0.3em] text-cyan-soft/70">
-          Depth
-        </span>
-        <div
-          className="relative w-px overflow-visible bg-cyan-glow/15"
-          style={{ height: TRACK_HEIGHT }}
-        >
+    <div className="pointer-events-none fixed inset-y-0 right-0 z-40 hidden w-px lg:top-24 lg:block">
+      <div className="absolute inset-0 bg-cyan-glow/10" />
+      <motion.div
+        className="absolute inset-x-0 top-0 h-full origin-top bg-gradient-to-b from-cyan-glow/30 to-transparent"
+        style={{ scaleY: smoothProgress }}
+        animate={{ opacity: active ? 1 : 0.5 }}
+        transition={{ duration: 0.6 }}
+      />
+      <motion.div className="absolute inset-x-0 top-0 h-full" style={{ y: markerY }}>
+        <div className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-glow shadow-[0_0_10px_rgba(34,211,238,0.85)]" />
+        <div className="absolute right-5 top-0 -translate-y-1/2">
           <motion.div
-            className="absolute inset-x-0 top-0 bg-gradient-to-b from-cyan-glow to-transparent"
-            style={{ height: fillHeight }}
-          />
-          <motion.div
-            className="absolute left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-glow shadow-[0_0_10px_rgba(34,211,238,0.85)]"
-            style={{ top: markerOffset }}
-          />
+            className="flex flex-col items-end gap-1.5 text-right"
+            animate={{ opacity: active ? 1 : 0, x: active ? 0 : 6 }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+          >
+            <DepthReadout depthValue={depthValue} />
+            <AnimatePresence>
+              {zoneToast && (
+                <motion.span
+                  key={zoneToast}
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.5 }}
+                  className="whitespace-nowrap font-display text-[10px] uppercase tracking-[0.3em] text-ink-400"
+                >
+                  {zoneToast}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
-        <span className="font-display text-xs tabular-nums text-cyan-glow text-glow">
-          {display.toLocaleString()} m
-        </span>
-        <span className="max-w-[6rem] text-center font-display text-[9px] uppercase tracking-[0.25em] text-ink-400">
-          {zone.label}
-        </span>
-      </div>
+      </motion.div>
     </div>
   );
 }

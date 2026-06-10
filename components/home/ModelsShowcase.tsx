@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { ModelCard } from "@/components/models/ModelCard";
-import { Button } from "@/components/ui/Button";
 import { GradientText } from "@/components/ui/GradientText";
 import { SectionReveal, StaggerGroup, StaggerItem } from "@/components/ui/SectionReveal";
 import { MODEL_FAMILIES } from "@/lib/models-data";
@@ -16,9 +16,15 @@ export function ModelsShowcase() {
             Nine Families, <GradientText>One Standard of Excellence</GradientText>
           </h2>
         </div>
-        <Button href="/production-models" variant="secondary">
+        <Link
+          href="/production-models"
+          className="group inline-flex shrink-0 items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-cyan-glow transition-colors duration-300 hover:text-cyan-soft"
+        >
           View All Models
-        </Button>
+          <span className="transition-transform duration-300 group-hover:translate-x-1">
+            →
+          </span>
+        </Link>
       </SectionReveal>
 
       <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

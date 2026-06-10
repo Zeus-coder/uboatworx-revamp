@@ -1,16 +1,41 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { type MouseEvent } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { GradientText } from "@/components/ui/GradientText";
 import { SonarRing } from "@/components/effects/SonarRing";
 import { HERO } from "@/lib/site-data";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+const PARALLAX_SPRING = { stiffness: 50, damping: 18, mass: 0.6 };
 
 export function Hero() {
+  const pointerX = useMotionValue(0);
+  const pointerY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(pointerY, [-0.5, 0.5], [3, -3]), PARALLAX_SPRING);
+  const rotateY = useSpring(useTransform(pointerX, [-0.5, 0.5], [-3, 3]), PARALLAX_SPRING);
+  const ringX = useSpring(useTransform(pointerX, [-0.5, 0.5], [30, -30]), PARALLAX_SPRING);
+  const ringY = useSpring(useTransform(pointerY, [-0.5, 0.5], [30, -30]), PARALLAX_SPRING);
+
+  const handleMouseMove = (event: MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    pointerX.set((event.clientX - rect.left) / rect.width - 0.5);
+    pointerY.set((event.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  const handleMouseLeave = () => {
+    pointerX.set(0);
+    pointerY.set(0);
+  };
+
   return (
-    <section className="relative -mt-20 flex min-h-screen items-center overflow-hidden lg:-mt-24">
+    <section
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative -mt-20 flex min-h-screen items-center overflow-hidden lg:-mt-24"
+    >
       <div className="absolute inset-0 -z-10">
         <video
           className="h-full w-full object-cover"
@@ -27,9 +52,16 @@ export function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-abyss-950/80 via-abyss-950/20 to-transparent" />
       </div>
 
-      <SonarRing className="pointer-events-none absolute -right-40 top-1/2 hidden h-[560px] w-[560px] -translate-y-1/2 opacity-30 lg:block" />
+      <div className="pointer-events-none absolute -right-40 top-1/2 hidden h-[560px] w-[560px] -translate-y-1/2 lg:block">
+        <motion.div className="h-full w-full" style={{ x: ringX, y: ringY }}>
+          <SonarRing className="h-full w-full opacity-30" />
+        </motion.div>
+      </div>
 
-      <div className="mx-auto w-full max-w-7xl px-6 pb-24 pt-40 lg:px-10">
+      <motion.div
+        style={{ rotateX, rotateY, transformPerspective: 1200 }}
+        className="mx-auto w-full max-w-7xl px-6 pb-24 pt-40 lg:px-10"
+      >
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -67,7 +99,7 @@ export function Hero() {
             Book a Consultation
           </Button>
         </motion.div>
-      </div>
+      </motion.div>
 
       <ScrollCue />
     </section>

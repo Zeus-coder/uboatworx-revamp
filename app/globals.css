@@ -29,6 +29,9 @@
   --animate-sonar-spin: sonar-spin 6s linear infinite;
   --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
   --animate-drift: drift 24s ease-in-out infinite;
+  --animate-caustic-1: caustic-drift-1 42s ease-in-out infinite;
+  --animate-caustic-2: caustic-drift-2 56s ease-in-out infinite;
+  --animate-caustic-3: caustic-drift-3 68s ease-in-out infinite;
 }
 
 @keyframes bubble-rise {
@@ -76,6 +79,36 @@
   }
   50% {
     transform: translate(2%, 3%);
+  }
+}
+
+@keyframes caustic-drift-1 {
+  0%,
+  100% {
+    transform: translate3d(-6%, -8%, 0) rotate(-8deg) scale(1);
+  }
+  50% {
+    transform: translate3d(8%, 6%, 0) rotate(4deg) scale(1.2);
+  }
+}
+
+@keyframes caustic-drift-2 {
+  0%,
+  100% {
+    transform: translate3d(6%, 5%, 0) rotate(6deg) scale(1.1);
+  }
+  50% {
+    transform: translate3d(-9%, -7%, 0) rotate(-4deg) scale(0.95);
+  }
+}
+
+@keyframes caustic-drift-3 {
+  0%,
+  100% {
+    transform: translate3d(0%, -5%, 0) rotate(2deg) scale(1);
+  }
+  50% {
+    transform: translate3d(5%, 9%, 0) rotate(-6deg) scale(1.15);
   }
 }
 
@@ -134,8 +167,11 @@ body::after {
 @utility glass-panel {
   background: linear-gradient(180deg, rgba(16, 42, 64, 0.55), rgba(6, 13, 23, 0.55));
   border: 1px solid rgba(94, 234, 212, 0.15);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 60px rgba(34, 211, 238, 0.04),
+    0 8px 40px rgba(0, 0, 0, 0.35);
 }
 
 @utility glow-border {
@@ -164,4 +200,26 @@ body::after {
 ::-webkit-scrollbar-thumb {
   background: var(--color-ocean-600);
   border-radius: 999px;
+}
+
+/* Pause ambient/decorative animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-bubble-rise,
+  .animate-sonar-spin,
+  .animate-pulse-glow,
+  .animate-drift,
+  .animate-caustic-1,
+  .animate-caustic-2,
+  .animate-caustic-3 {
+    animation: none !important;
+  }
 }
